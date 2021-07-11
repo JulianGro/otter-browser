@@ -29,7 +29,17 @@ jobs:
             #  apt-dependencies: git build-essential cmake qtbase5-dev libqt5core5a libqt5gui5 libqt5multimedia5 qtmultimedia5-dev libqt5network5 libqt5printsupport5 libqt5qml5 qtdeclarative5-dev libqt5svg5 libqt5svg5-dev libqt5widgets libhunstell-dev libqt5webengine5 qtwebengine5-dev
             - os: ubuntu-18.04
               build_type: qtwebkit
-              apt-dependencies: git build-essential cmake qtbase5-dev libqt5core5a libqt5gui5 libqt5multimedia5 qtmultimedia5-dev libqt5network5 libqt5printsupport5 libqt5qml5 qtdeclarative5-dev libqt5svg5 libqt5svg5-dev libqt5widgets5 libhunspell-dev libqt5webkit5 libqt5webkit5-dev tree
+              apt-dependencies: git build-essential cmake qtbase5-dev libqt5core5a libqt5gui5 libqt5multimedia5 qtmultimedia5-dev libqt5network5 libqt5printsupport5 libqt5qml5 qtdeclarative5-dev libqt5svg5 libqt5svg5-dev libqt5widgets5 libhunspell-dev libqt5webkit5 libqt5webkit5-dev
+
+            # Builds with Qt 5.15.2
+            - os: ubuntu-18.04
+              build_type: qtwebengine
+              qt_source: action
+              apt-dependencies: git build-essential cmake libhunstell-dev
+            - os: ubuntu-18.04
+              build_type: qtwebkit
+              qt_source: action
+              apt-dependencies: git build-essential cmake libhunspell-dev
 
             # Ubuntu 20.04 repos do not contain the minimum needed version 5.15.0 of qtwebengine.
             #- os: ubuntu-20.04
@@ -90,7 +100,7 @@ jobs:
 
 
     - name: Clear Working Directory
-      if: startsWith(matrix.os, 'windows')
+      if: startsWith(matrix.os, 'windows') || startsWith(matrix.os, 'macos') || startsWith(matrix.qt_source, 'action')
       shell: bash
       working-directory: ${{runner.workspace}}
       run: rm -rf ./*
@@ -99,6 +109,14 @@ jobs:
       with:
         submodules: false
         fetch-depth: 1
+
+    - name: Install Qt
+      if: startsWith(matrix.os, 'windows') || startsWith(matrix.os, 'macos') || startsWith(matrix.qt_source, 'action')
+      uses: jurplel/install-qt-action@v2
+      with:
+        if: $matrix.build_type == 'qtwebengine')
+        modules: qtwebengine
+
 
     - name: Install dependencies
       shell: bash
