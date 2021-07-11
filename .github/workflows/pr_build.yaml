@@ -119,9 +119,7 @@ jobs:
     - name: Configure CMake
       working-directory: ${{runner.workspace}}/build
       shell: bash
-      run: |
-        tree -d ../
-        cmake ../
+      run: cmake $GITHUB_WORKSPACE
 
     - name: Build Otter Browser
       working-directory: ${{runner.workspace}}/build
