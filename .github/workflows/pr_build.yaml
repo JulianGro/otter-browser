@@ -79,11 +79,11 @@ jobs:
         echo "Installing apt packages"
         sudo apt install -y ${{ matrix.apt-dependencies }}
 
-        # Install QtWebKit without install Qt from the repositories.
+        # Install QtWebKit without installing Qt from the repositories.
         if [[ "${{ matrix.build_type }}" = "qtwebkit" && "${{ matrix.qt_version }}" != "repository" ]]; then
-            echo "Installing QtWebKit without it's dependencies"
+            echo "Installing QtWebKit without its dependencies"
             apt-get download libqt5webkit5-dev
-            dpkg --force-all -i libqt5webkit5-dev*.deb
+            sudo dpkg --force-all -i libqt5webkit5-dev*.deb
         fi
 
     - name: Create Build Environment
