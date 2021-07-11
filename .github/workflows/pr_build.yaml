@@ -15,12 +15,12 @@ jobs:
         matrix:
           include:
             # Windows fails because libhunspell-dev is missing
-            #            - os: windows-latest
-            #              build_type: qtwebengine
-            #              qt_version: 5.15.2
-            #            - os: windows-latest
-            #              build_type: qtwebkit
-            #              qt_version: 5.15.2
+            - os: windows-latest
+              build_type: qtwebengine
+              qt_version: 5.15.2
+            - os: windows-latest
+              build_type: qtwebkit
+              qt_version: 5.15.2
             - os: ubuntu-18.04
               build_type: qtwebkit
               qt_version: repository
@@ -38,12 +38,12 @@ jobs:
               qt_version: repository
               apt-dependencies: git build-essential cmake qtbase5-dev libqt5core5a libqt5gui5 libqt5multimedia5 qtmultimedia5-dev libqt5network5 libqt5printsupport5 libqt5qml5 qtdeclarative5-dev libqt5svg5 libqt5svg5-dev libqt5widgets5 libhunspell-dev libqt5webkit5 libqt5webkit5-dev
             # MacOS fails because libhunspell-dev is missing
-            #            - os: macOS-latest
-            #              build_type: qtwebengine
-            #              qt_version: 5.15.2
-            #            - os: macOS-latest
-            #              build_type: qtwebkit
-            #              qt_version: 5.15.2
+            - os: macOS-latest
+              build_type: qtwebengine
+              qt_version: 5.15.2
+            - os: macOS-latest
+              build_type: qtwebkit
+              qt_version: 5.15.2
         fail-fast: false
     runs-on: ${{matrix.os}}
     - uses: actions/checkout@v1
