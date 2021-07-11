@@ -2,15 +2,11 @@ name: Pull Request CI Build
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened, labeled]
+    types: [opened, synchronize, reopened]
 
 env:
   GIT_COMMIT: ${{ github.sha }}
   RELEASE_NUMBER: ${{ github.event.number }}
-
-  # WIN32 specific variables
-  # PreferredToolArchitecture: X64
-
 
 jobs:
   build:
@@ -18,12 +14,13 @@ jobs:
     strategy:
         matrix:
           include:
-            - os: windows-latest
-              build_type: qtwebengine
-              qt_version: 5.15.2
-            - os: windows-latest
-              build_type: qtwebkit
-              qt_version: 5.15.2
+# Windows fails because libhunspell-dev is missing
+#            - os: windows-latest
+#              build_type: qtwebengine
+#              qt_version: 5.15.2
+#            - os: windows-latest
+#              build_type: qtwebkit
+#              qt_version: 5.15.2
 
             - os: ubuntu-18.04
               build_type: qtwebkit
@@ -44,85 +41,36 @@ jobs:
               qt_version: repository
               apt-dependencies: git build-essential cmake qtbase5-dev libqt5core5a libqt5gui5 libqt5multimedia5 qtmultimedia5-dev libqt5network5 libqt5printsupport5 libqt5qml5 qtdeclarative5-dev libqt5svg5 libqt5svg5-dev libqt5widgets5 libhunspell-dev libqt5webkit5 libqt5webkit5-dev
 
-            - os: macOS-latest
-              build_type: qtwebengine
-              qt_version: 5.15.2
-            - os: macOS-latest
-              build_type: qtwebkit
-              qt_version: 5.15.2
+# MacOS fails because libhunspell-dev is missing
+#            - os: macOS-latest
+#              build_type: qtwebengine
+#              qt_version: 5.15.2
+#            - os: macOS-latest
+#              build_type: qtwebkit
+#              qt_version: 5.15.2
 
         fail-fast: false
+
     runs-on: ${{matrix.os}}
-    if: github.event.action != 'labeled' || github.event.label.name == 'rebuild'
-    steps:
-    - name: Configure Build Environment 1
-      shell: bash
-      id: buildenv1
-      run: |
-        echo ::set-output name=github_sha_short::`echo $GIT_COMMIT | cut -c1-7`
-        echo "JOB_NAME=build (${{matrix.os}}, ${{matrix.build_type}})" >> $GITHUB_ENV
-
-        # Linux build variables
-        if [[ "${{ matrix.os }}" = "ubuntu-"* ]]; then
-          echo "PYTHON_EXEC=python3" >> $GITHUB_ENV
-          echo "INSTALLER_EXT=*" >> $GITHUB_ENV
-          if [ "${{ matrix.build_type }}" = "full" ]; then
-            echo "CMAKE_EXTRA=-DBUILD_TOOLS:BOOLEAN=FALSE -DHIFI_PYTHON_EXEC:FILEPATH=$(which python3)" >> $GITHUB_ENV
-          else
-            echo "CMAKE_EXTRA=-DCLIENT_ONLY=1 -DBUILD_TOOLS:BOOLEAN=FALSE -DHIFI_PYTHON_EXEC:FILEPATH=$(which python3)" >> $GITHUB_ENV
-          fi
-        fi
-
-        # Windows build variables
-        if [ "${{ matrix.os }}" = "windows-latest" ]; then
-          echo "PYTHON_EXEC=python" >> $GITHUB_ENV
-          echo "INSTALLER_EXT=exe" >> $GITHUB_ENV
-          if [ "${{ matrix.build_type }}" = "full" ]; then
-            echo "CMAKE_EXTRA=-A x64" >> $GITHUB_ENV
-          else
-            echo "CMAKE_EXTRA=-A x64 -DCLIENT_ONLY=1" >> $GITHUB_ENV
-          fi
-        fi
-
-    # Configuration is broken into two steps because you can't set an env var and also reference it in the same step
-    - name: Configure Build Environment 2
-      shell: bash
-      run: |
-
-        echo "${{ steps.buildenv1.outputs.symbols_archive }}"
-        echo "GIT_COMMIT_SHORT=${{ steps.buildenv1.outputs.github_sha_short }}" >> $GITHUB_ENV
-        if [ "${{ matrix.build_type }}" = "qtwebkit" ]; then
-          echo "ARTIFACT_PATTERN=otter-browser-qtwebkit-PR${{ github.event.number }}-*.$INSTALLER_EXT" >> $GITHUB_ENV
-          echo "INSTALLER=otter-browser-qtwebkit-$RELEASE_NUMBER-$GIT_COMMIT_SHORT.$INSTALLER_EXT" >> $GITHUB_ENV
-        else
-          echo "ARTIFACT_PATTERN=otter-browser-qtwebengine-PR${{ github.event.number }}-*.$INSTALLER_EXT" >> $GITHUB_ENV
-          echo "INSTALLER=otter-browser-qtwebengine-$RELEASE_NUMBER-$GIT_COMMIT_SHORT.$INSTALLER_EXT" >> $GITHUB_ENV
-        fi
-
-
-    - name: Clear Working Directory
-      if: startsWith(matrix.os, 'windows') || startsWith(matrix.os, 'macos') || startsWith(matrix.qt_source, 'action')
-      shell: bash
-      working-directory: ${{runner.workspace}}
-      run: rm -rf ./*
 
     - uses: actions/checkout@v1
       with:
         submodules: false
         fetch-depth: 1
 
-    - name: Install Qt
+    - name: Install Qt ${{matrix.qt_version}} with QtWebEngine
       if: startsWith(matrix.os, 'windows') && startsWith(matrix.build_type, 'qtwebengine') || startsWith(matrix.os, 'macos') && startsWith(matrix.build_type, 'qtwebengine') || startsWith(matrix.os, 'ubuntu') && !startsWith(matrix.qt_version, 'repository') && startsWith(matrix.build_type, 'qtwebengine')
       uses: jurplel/install-qt-action@v2
       with:
         version: ${{matrix.qt_version}}
         modules: qtwebengine
-    - name: Install Qt
+
+    - name: Install Qt ${{matrix.qt_version}} with QtWebKit
       if: startsWith(matrix.os, 'windows') && startsWith(matrix.build_type, 'qtwebkit') || startsWith(matrix.os, 'macos') && startsWith(matrix.build_type, 'qtwebkit') || startsWith(matrix.os, 'ubuntu') && !startsWith(matrix.qt_version, 'repository') && startsWith(matrix.build_type, 'qtwebkit')
       uses: jurplel/install-qt-action@v2
       with:
         version: ${{matrix.qt_version}}
-        modules: qtwebkit
+        modules: webkitwidgets
 
     - name: Install dependencies
       shell: bash
@@ -149,35 +97,6 @@ jobs:
       shell: bash
       run: cmake --build . --parallel 3
 
-
-#    - name: Build Installer
-#      working-directory: ${{runner.workspace}}/build
-#      shell: bash
-#      run: |
-#        echo "Retry code from https://unix.stackexchange.com/a/137639"
-#        function fail {
-#          echo $1 >&2
-#          exit 1
-#        }
-#
-#        function retry {
-#          local n=1
-#          local max=1
-#          local delay=15
-#          while true; do
-#            "$@" && break || {
-#              if [[ $n -lt $max ]]; then
-#                ((n++))
-#                echo "Command failed. Attempt $n/$max:"
-#                sleep $delay;
-#              else
-#                fail "The command has failed after $n attempts."
-#              fi
-#            }
-#          done
-#        }
-#        retry cmake --build . --config $BUILD_TYPE --target package $CMAKE_BUILD_EXTRA
-
     - name: Output system stats
       if: ${{ always() }}
       working-directory: ${{runner.workspace}}/build
@@ -185,8 +104,3 @@ jobs:
       run: |
         echo "Disk usage:"
         df -h
-    - name: Output Installer Logs
-      if: failure() && matrix.os == 'windows-latest'
-      shell: bash
-      working-directory: ${{runner.workspace}}/build
-      run: cat ./_CPack_Packages/win64/NSIS/NSISOutput.log
