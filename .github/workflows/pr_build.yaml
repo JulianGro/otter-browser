@@ -111,8 +111,8 @@ jobs:
       shell: bash
       if: startsWith(matrix.os, 'ubuntu')
       run: |
-#        echo "Installing Python Modules:"
-#        pip3 install distro || exit 1
+        #echo "Installing Python Modules:"
+        #pip3 install distro || exit 1
 
         echo "Updating apt repository index"
         sudo apt update
