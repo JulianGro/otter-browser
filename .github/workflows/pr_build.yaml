@@ -80,7 +80,8 @@ jobs:
         sudo apt install -y ${{ matrix.apt-dependencies }}
 
         # Install QtWebKit without install Qt from the repositories.
-        if [ "${{ matrix.build_type }}" = "qtwebkit" && "${{ matrix.qt_version }}" != "repository" ]; then
+        if [[ "${{ matrix.build_type }}" = "qtwebkit" && "${{ matrix.qt_version }}" != "repository" ]]; then
+            echo "Installing QtWebKit without it's dependencies"
             apt-get download libqt5webkit5-dev
             dpkg --force-all -i libqt5webkit5-dev*.deb
         fi
