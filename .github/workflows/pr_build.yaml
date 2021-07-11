@@ -14,41 +14,42 @@ env:
 
 jobs:
   build:
-    name: "build (${{matrix.os}}, ${{matrix.build_type}})"
+    name: "${{matrix.os}}, ${{matrix.qt_version}}, ${{matrix.build_type}}"
     strategy:
         matrix:
           include:
             - os: windows-latest
               build_type: qtwebengine
+              qt_version: 5.15.2
             - os: windows-latest
               build_type: qtwebkit
+              qt_version: 5.15.2
 
-            # Ubuntu 18.04 repos do not contain the minimum needed version 5.15.0 of qtwebengine.
-            #- os: ubuntu-18.04
-            #  build_type: qtwebengine
-            #  apt-dependencies: git build-essential cmake qtbase5-dev libqt5core5a libqt5gui5 libqt5multimedia5 qtmultimedia5-dev libqt5network5 libqt5printsupport5 libqt5qml5 qtdeclarative5-dev libqt5svg5 libqt5svg5-dev libqt5widgets libhunspell-dev libqt5webengine5 qtwebengine5-dev
             - os: ubuntu-18.04
               build_type: qtwebkit
+              qt_version: repository
               apt-dependencies: git build-essential cmake qtbase5-dev libqt5core5a libqt5gui5 libqt5multimedia5 qtmultimedia5-dev libqt5network5 libqt5printsupport5 libqt5qml5 qtdeclarative5-dev libqt5svg5 libqt5svg5-dev libqt5widgets5 libhunspell-dev libqt5webkit5 libqt5webkit5-dev
 
-            # Builds with Qt 5.15.2
             - os: ubuntu-18.04
               build_type: qtwebengine
-              qt_source: action
+              qt_version: 5.15.2
               apt-dependencies: git build-essential cmake libhunspell-dev
             - os: ubuntu-18.04
               build_type: qtwebkit
-              qt_source: action
+              qt_version: 5.15.2
               apt-dependencies: git build-essential cmake libhunspell-dev
 
-            # Ubuntu 20.04 repos do not contain the minimum needed version 5.15.0 of qtwebengine.
-            #- os: ubuntu-20.04
-            #  build_type: qtwebengine
-            #  apt-dependencies: git build-essential cmake qtbase5-dev libqt5core5a libqt5gui5 libqt5multimedia5 qtmultimedia5-dev libqt5network5 libqt5printsupport5 libqt5qml5 qtdeclarative5-dev libqt5svg5 libqt5svg5-dev libqt5widgets5 libhunspell-dev libqt5webengine5 qtwebengine5-dev
             - os: ubuntu-20.04
               build_type: qtwebkit
+              qt_version: repository
               apt-dependencies: git build-essential cmake qtbase5-dev libqt5core5a libqt5gui5 libqt5multimedia5 qtmultimedia5-dev libqt5network5 libqt5printsupport5 libqt5qml5 qtdeclarative5-dev libqt5svg5 libqt5svg5-dev libqt5widgets5 libhunspell-dev libqt5webkit5 libqt5webkit5-dev
 
+            - os: macOS-latest
+              build_type: qtwebengine
+              qt_version: 5.15.2
+            - os: macOS-latest
+              build_type: qtwebkit
+              qt_version: 5.15.2
 
         fail-fast: false
     runs-on: ${{matrix.os}}
@@ -111,13 +112,16 @@ jobs:
         fetch-depth: 1
 
     - name: Install Qt
-      if: startsWith(matrix.os, 'windows') && startsWith(matrix.build_type, 'qtwebengine') || startsWith(matrix.os, 'macos') && startsWith(matrix.build_type, 'qtwebengine') || startsWith(matrix.os, 'ubuntu') && startsWith(matrix.qt_source, 'action') && startsWith(matrix.build_type, 'qtwebengine')
+      if: startsWith(matrix.os, 'windows') && startsWith(matrix.build_type, 'qtwebengine') || startsWith(matrix.os, 'macos') && startsWith(matrix.build_type, 'qtwebengine') || startsWith(matrix.os, 'ubuntu') && !startsWith(matrix.qt_version, 'repository') && startsWith(matrix.build_type, 'qtwebengine')
       uses: jurplel/install-qt-action@v2
       with:
+        version: ${{matrix.qt_version}}
         modules: qtwebengine
-      if: startsWith(matrix.os, 'windows') && startsWith(matrix.build_type, 'qtwebkit') || startsWith(matrix.os, 'macos') && startsWith(matrix.build_type, 'qtwebkit') || startsWith(matrix.os, 'ubuntu') && startsWith(matrix.qt_source, 'action') && startsWith(matrix.build_type, 'qtwebkit')
+    - name: Install Qt
+      if: startsWith(matrix.os, 'windows') && startsWith(matrix.build_type, 'qtwebkit') || startsWith(matrix.os, 'macos') && startsWith(matrix.build_type, 'qtwebkit') || startsWith(matrix.os, 'ubuntu') && !startsWith(matrix.qt_version, 'repository') && startsWith(matrix.build_type, 'qtwebkit')
       uses: jurplel/install-qt-action@v2
       with:
+        version: ${{matrix.qt_version}}
         modules: qtwebkit
 
     - name: Install dependencies
