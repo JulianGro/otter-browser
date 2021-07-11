@@ -5,16 +5,8 @@ on:
     types: [opened, synchronize, reopened, labeled]
 
 env:
-  APP_NAME: interface
-  CI_BUILD: Github
   GIT_COMMIT: ${{ github.sha }}
-  RELEASE_TYPE: PR
   RELEASE_NUMBER: ${{ github.event.number }}
-  VERSION_CODE: ${{ github.event.number }}
-  # Sentry Crash Reporting
-  CMAKE_BACKTRACE_URL: ${{ secrets.MINIDUMP_TOKEN }}
-  CMAKE_BACKTRACE_TOKEN: PR_${{ github.event.number }}_${{ github.sha }}
-
 
   # WIN32 specific variables
   PreferredToolArchitecture: X64
@@ -127,12 +119,12 @@ jobs:
     - name: Configure CMake
       working-directory: ${{runner.workspace}}/build
       shell: bash
-      run: cmake ../ -- -j3
+      run: cmake ../
 
     - name: Build Otter Browser
       working-directory: ${{runner.workspace}}/build
       shell: bash
-      run: cmake --build . -- -j3
+      run: cmake --build . --parallel 3
 
 
     - name: Build Installer
