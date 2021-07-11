@@ -127,12 +127,12 @@ jobs:
     - name: Configure CMake
       working-directory: ${{runner.workspace}}/build
       shell: bash
-      run: cmake ../ -j3
+      run: cmake ../ -- -j3
 
     - name: Build Otter Browser
       working-directory: ${{runner.workspace}}/build
       shell: bash
-      run: cmake --build . -j3
+      run: cmake --build . -- -j3
 
 
     - name: Build Installer
