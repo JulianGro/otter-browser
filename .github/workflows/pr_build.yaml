@@ -61,12 +61,11 @@ jobs:
         version: ${{matrix.qt_version}}
         modules: qtwebengine
 
-    - name: Install Qt ${{matrix.qt_version}} with QtWebKit
+    - name: Install Qt ${{matrix.qt_version}} without QtWebEngine
       if: startsWith(matrix.os, 'windows') && startsWith(matrix.build_type, 'qtwebkit') || startsWith(matrix.os, 'macos') && startsWith(matrix.build_type, 'qtwebkit') || startsWith(matrix.os, 'ubuntu') && !startsWith(matrix.qt_version, 'repository') && startsWith(matrix.build_type, 'qtwebkit')
       uses: jurplel/install-qt-action@v2
       with:
         version: ${{matrix.qt_version}}
-        modules: webkitwidgets
 
     - name: Install dependencies
       shell: bash
