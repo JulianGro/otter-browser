@@ -26,7 +26,7 @@ jobs:
             # Ubuntu 18.04 repos do not contain the minimum needed version 5.15.0 of qtwebengine.
             #- os: ubuntu-18.04
             #  build_type: qtwebengine
-            #  apt-dependencies: git build-essential cmake qtbase5-dev libqt5core5a libqt5gui5 libqt5multimedia5 qtmultimedia5-dev libqt5network5 libqt5printsupport5 libqt5qml5 qtdeclarative5-dev libqt5svg5 libqt5svg5-dev libqt5widgets libhunstell-dev libqt5webengine5 qtwebengine5-dev
+            #  apt-dependencies: git build-essential cmake qtbase5-dev libqt5core5a libqt5gui5 libqt5multimedia5 qtmultimedia5-dev libqt5network5 libqt5printsupport5 libqt5qml5 qtdeclarative5-dev libqt5svg5 libqt5svg5-dev libqt5widgets libhunspell-dev libqt5webengine5 qtwebengine5-dev
             - os: ubuntu-18.04
               build_type: qtwebkit
               apt-dependencies: git build-essential cmake qtbase5-dev libqt5core5a libqt5gui5 libqt5multimedia5 qtmultimedia5-dev libqt5network5 libqt5printsupport5 libqt5qml5 qtdeclarative5-dev libqt5svg5 libqt5svg5-dev libqt5widgets5 libhunspell-dev libqt5webkit5 libqt5webkit5-dev
@@ -35,7 +35,7 @@ jobs:
             - os: ubuntu-18.04
               build_type: qtwebengine
               qt_source: action
-              apt-dependencies: git build-essential cmake libhunstell-dev
+              apt-dependencies: git build-essential cmake libhunspell-dev
             - os: ubuntu-18.04
               build_type: qtwebkit
               qt_source: action
@@ -111,19 +111,19 @@ jobs:
         fetch-depth: 1
 
     - name: Install Qt
-      if: startsWith(matrix.os, 'windows') || startsWith(matrix.os, 'macos') || startsWith(matrix.qt_source, 'action')
+      if: startsWith(matrix.os, 'windows') && startsWith(matrix.build_type, 'qtwebengine') || startsWith(matrix.os, 'macos') && startsWith(matrix.build_type, 'qtwebengine') || startsWith(matrix.os, 'ubuntu') && startsWith(matrix.qt_source, 'action') && startsWith(matrix.build_type, 'qtwebengine')
       uses: jurplel/install-qt-action@v2
       with:
-        if: $matrix.build_type == 'qtwebengine')
         modules: qtwebengine
-
+      if: startsWith(matrix.os, 'windows') && startsWith(matrix.build_type, 'qtwebkit') || startsWith(matrix.os, 'macos') && startsWith(matrix.build_type, 'qtwebkit') || startsWith(matrix.os, 'ubuntu') && startsWith(matrix.qt_source, 'action') && startsWith(matrix.build_type, 'qtwebkit')
+      uses: jurplel/install-qt-action@v2
+      with:
+        modules: qtwebkit
 
     - name: Install dependencies
       shell: bash
       if: startsWith(matrix.os, 'ubuntu')
       run: |
-        #echo "Installing Python Modules:"
-        #pip3 install distro || exit 1
 
         echo "Updating apt repository index"
         sudo apt update
@@ -146,33 +146,33 @@ jobs:
       run: cmake --build . --parallel 3
 
 
-    - name: Build Installer
-      working-directory: ${{runner.workspace}}/build
-      shell: bash
-      run: |
-        echo "Retry code from https://unix.stackexchange.com/a/137639"
-        function fail {
-          echo $1 >&2
-          exit 1
-        }
-
-        function retry {
-          local n=1
-          local max=1
-          local delay=15
-          while true; do
-            "$@" && break || {
-              if [[ $n -lt $max ]]; then
-                ((n++))
-                echo "Command failed. Attempt $n/$max:"
-                sleep $delay;
-              else
-                fail "The command has failed after $n attempts."
-              fi
-            }
-          done
-        }
-        retry cmake --build . --config $BUILD_TYPE --target package $CMAKE_BUILD_EXTRA
+#    - name: Build Installer
+#      working-directory: ${{runner.workspace}}/build
+#      shell: bash
+#      run: |
+#        echo "Retry code from https://unix.stackexchange.com/a/137639"
+#        function fail {
+#          echo $1 >&2
+#          exit 1
+#        }
+#
+#        function retry {
+#          local n=1
+#          local max=1
+#          local delay=15
+#          while true; do
+#            "$@" && break || {
+#              if [[ $n -lt $max ]]; then
+#                ((n++))
+#                echo "Command failed. Attempt $n/$max:"
+#                sleep $delay;
+#              else
+#                fail "The command has failed after $n attempts."
+#              fi
+#            }
+#          done
+#        }
+#        retry cmake --build . --config $BUILD_TYPE --target package $CMAKE_BUILD_EXTRA
 
     - name: Output system stats
       if: ${{ always() }}
