@@ -48,7 +48,6 @@ jobs:
             #            - os: macOS-latest
             #              build_type: qtwebkit
             #              qt_version: 5.15.2
-
         fail-fast: false
     runs-on: ${{matrix.os}}
     - uses: actions/checkout@v1
