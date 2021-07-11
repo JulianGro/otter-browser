@@ -1,12 +1,11 @@
-name: Pull Request CI Build
+name: CI Build
 
 on:
   pull_request:
     types: [opened, synchronize, reopened]
-
-env:
-  GIT_COMMIT: ${{ github.sha }}
-  RELEASE_NUMBER: ${{ github.event.number }}
+  push:
+    branches:
+      - master
 
 jobs:
   build:
@@ -16,13 +15,14 @@ jobs:
         fail-fast: false
         matrix:
           include:
-              # Windows fails because libhunspell-dev is missing
-            - os: windows-latest
-              build_type: qtwebengine
-              qt_version: 5.15.2
-            - os: windows-latest
-              build_type: qtwebkit
-              qt_version: 5.15.2
+            # Windows fails because libhunspell-dev is missing. See https://github.com/OtterBrowser/otter-browser/issues/1684
+            #- os: windows-latest
+            #  build_type: qtwebengine
+            #  qt_version: 5.15.2
+            # TODO: Install QtWebKit on Windows
+            #- os: windows-latest
+            #  build_type: qtwebkit
+            #  qt_version: 5.15.2
             - os: ubuntu-18.04
               build_type: qtwebkit
               qt_version: repository
@@ -31,21 +31,23 @@ jobs:
               build_type: qtwebengine
               qt_version: 5.15.2
               apt-dependencies: git build-essential cmake libhunspell-dev
-            - os: ubuntu-18.04
-              build_type: qtwebkit
-              qt_version: 5.15.2
-              apt-dependencies: git build-essential cmake libhunspell-dev
+            # TODO: figure out how to install QtWebKit without installing system Qt
+            #- os: ubuntu-18.04
+            #  build_type: qtwebkit
+            #  qt_version: 5.15.2
+            #  apt-dependencies: git build-essential cmake libhunspell-dev
             - os: ubuntu-20.04
               build_type: qtwebkit
               qt_version: repository
               apt-dependencies: git build-essential cmake qtbase5-dev libqt5core5a libqt5gui5 libqt5multimedia5 qtmultimedia5-dev libqt5network5 libqt5printsupport5 libqt5qml5 qtdeclarative5-dev libqt5svg5 libqt5svg5-dev libqt5widgets5 libhunspell-dev libqt5webkit5 libqt5webkit5-dev
-              # MacOS fails because libhunspell-dev is missing
-            - os: macOS-latest
-              build_type: qtwebengine
-              qt_version: 5.15.2
-            - os: macOS-latest
-              build_type: qtwebkit
-              qt_version: 5.15.2
+            # MacOS fails because libhunspell-dev is missing. See https://github.com/OtterBrowser/otter-browser/issues/1684
+            #- os: macOS-latest
+            #  build_type: qtwebengine
+            #  qt_version: 5.15.2
+            # TODO: Install QtWebKit on MacOS
+            #- os: macOS-latest
+            #  build_type: qtwebkit
+            #  qt_version: 5.15.2
 
     steps:
     - name: Get Otter Browser source
