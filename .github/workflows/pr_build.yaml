@@ -47,6 +47,7 @@ jobs:
               build_type: qtwebkit
               qt_version: 5.15.2
 
+    - name: Get Otter Browser source
     - uses: actions/checkout@v1
       with:
         submodules: false
