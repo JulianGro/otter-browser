@@ -18,10 +18,10 @@ jobs:
     strategy:
         matrix:
           include:
-            - os: windows-latest
-              build_type: qtwebengine
-            - os: windows-latest
-              build_type: qtwebkit
+            #- os: windows-latest
+            #  build_type: qtwebengine
+            #- os: windows-latest
+            #  build_type: qtwebkit
 
             # Ubuntu 18.04 repos do not contain the minimum needed version 5.15.0 of qtwebengine.
             #- os: ubuntu-18.04
@@ -29,14 +29,14 @@ jobs:
             #  apt-dependencies: git build-essential cmake qtbase5-dev libqt5core5a libqt5gui5 libqt5multimedia5 qtmultimedia5-dev libqt5network5 libqt5printsupport5 libqt5qml5 qtdeclarative5-dev libqt5svg5 libqt5svg5-dev libqt5widgets libqt5webengine5 qtwebengine5-dev
             - os: ubuntu-18.04
               build_type: qtwebkit
-              apt-dependencies: git build-essential cmake qtbase5-dev libqt5core5a libqt5gui5 libqt5multimedia5 qtmultimedia5-dev libqt5network5 libqt5printsupport5 libqt5qml5 qtdeclarative5-dev libqt5svg5 libqt5svg5-dev libqt5widgets5 libqt5webkit5 libqt5webkit5-dev
+              apt-dependencies: git build-essential cmake qtbase5-dev libqt5core5a libqt5gui5 libqt5multimedia5 qtmultimedia5-dev libqt5network5 libqt5printsupport5 libqt5qml5 qtdeclarative5-dev libqt5svg5 libqt5svg5-dev libqt5widgets5 libqt5webkit5 libqt5webkit5-dev tree
 
-            - os: ubuntu-20.04
-              build_type: qtwebengine
-              apt-dependencies: git build-essential cmake qtbase5-dev libqt5core5a libqt5gui5 libqt5multimedia5 qtmultimedia5-dev libqt5network5 libqt5printsupport5 libqt5qml5 qtdeclarative5-dev libqt5svg5 libqt5svg5-dev libqt5widgets5 libqt5webengine5 qtwebengine5-dev
-            - os: ubuntu-20.04
-              build_type: qtwebkit
-              apt-dependencies: git build-essential cmake qtbase5-dev libqt5core5a libqt5gui5 libqt5multimedia5 qtmultimedia5-dev libqt5network5 libqt5printsupport5 libqt5qml5 qtdeclarative5-dev libqt5svg5 libqt5svg5-dev libqt5widgets5 libqt5webkit5 libqt5webkit5-dev
+            #- os: ubuntu-20.04
+            #  build_type: qtwebengine
+            #  apt-dependencies: git build-essential cmake qtbase5-dev libqt5core5a libqt5gui5 libqt5multimedia5 qtmultimedia5-dev libqt5network5 libqt5printsupport5 libqt5qml5 qtdeclarative5-dev libqt5svg5 libqt5svg5-dev libqt5widgets5 libqt5webengine5 qtwebengine5-dev
+            #- os: ubuntu-20.04
+            #  build_type: qtwebkit
+            #  apt-dependencies: git build-essential cmake qtbase5-dev libqt5core5a libqt5gui5 libqt5multimedia5 qtmultimedia5-dev libqt5network5 libqt5printsupport5 libqt5qml5 qtdeclarative5-dev libqt5svg5 libqt5svg5-dev libqt5widgets5 libqt5webkit5 libqt5webkit5-dev
 
 
         fail-fast: false
@@ -119,7 +119,9 @@ jobs:
     - name: Configure CMake
       working-directory: ${{runner.workspace}}/build
       shell: bash
-      run: cmake ../
+      run: |
+        cmake ../
+        tree -d ../
 
     - name: Build Otter Browser
       working-directory: ${{runner.workspace}}/build
