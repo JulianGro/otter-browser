@@ -31,11 +31,10 @@ jobs:
               build_type: qtwebengine
               qt_version: 5.15.2
               apt-dependencies: git build-essential cmake libhunspell-dev
-            # TODO: figure out how to install QtWebKit without installing system Qt
-            #- os: ubuntu-18.04
-            #  build_type: qtwebkit
-            #  qt_version: 5.15.2
-            #  apt-dependencies: git build-essential cmake libhunspell-dev
+            - os: ubuntu-18.04
+              build_type: qtwebkit
+              qt_version: 5.15.2
+              apt-dependencies: git build-essential cmake libhunspell-dev
             - os: ubuntu-20.04
               build_type: qtwebkit
               qt_version: repository
@@ -79,6 +78,12 @@ jobs:
 
         echo "Installing apt packages"
         sudo apt install -y ${{ matrix.apt-dependencies }}
+
+        # Install QtWebKit without install Qt from the repositories.
+        if [ "${{ matrix.build_type }}" = "qtwebkit" && "${{ matrix.qt_version }}" != "repository" ]; then
+          apt-get download libqt5webkit5-dev
+          dpkg --force-all -i libqt5webkit5-dev*.deb
+        fi
 
     - name: Create Build Environment
       shell: bash
