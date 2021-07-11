@@ -81,8 +81,8 @@ jobs:
 
         # Install QtWebKit without install Qt from the repositories.
         if [ "${{ matrix.build_type }}" = "qtwebkit" && "${{ matrix.qt_version }}" != "repository" ]; then
-          apt-get download libqt5webkit5-dev
-          dpkg --force-all -i libqt5webkit5-dev*.deb
+            apt-get download libqt5webkit5-dev
+            dpkg --force-all -i libqt5webkit5-dev*.deb
         fi
 
     - name: Create Build Environment
