@@ -80,26 +80,26 @@ jobs:
         version: ${{matrix.qt_version}}
 
     # Installs dependencies needed to build hunspell
-    - name: Install msys2 on Windows
-      if: startsWith(matrix.os, 'windows') && endsWith(matrix.build_type, 'with hunspell')
-      uses: msys2/setup-msys2@v2
-      with:
-        install: >-
-          base-devel
-          mingw-w64-x86_64-toolchain
-          mingw-w64-x86_64-libtool
+    #~ - name: Install msys2 on Windows
+      #~ if: startsWith(matrix.os, 'windows') && endsWith(matrix.build_type, 'with hunspell')
+      #~ uses: msys2/setup-msys2@v2
+      #~ with:
+        #~ install: >-
+          #~ base-devel
+          #~ mingw-w64-x86_64-toolchain
+          #~ mingw-w64-x86_64-libtool
 
-    - name: Install hunspell on Windows
-      if: startsWith(matrix.os, 'windows') && endsWith(matrix.build_type, 'with hunspell')
-      shell: msys2 {0}
-      run: |
-        curl -Ls https://github.com/hunspell/hunspell/files/2573619/hunspell-1.7.0.tar.gz -o hunspell.tar.gz
-        tar -xf hunspell.tar.gz
-        cd hunspell-1.7.0
-        autoreconf -vfi
-        ./configure
-        make -j2
-        echo "CMAKE_BUILD_EXTRA=-DHunspell_INCLUDE_DIR=$RUNNER_WORKSPACE\hunspell-1.7.0\src\hunspell\hunspell.hxx -DHunspell_LIBRARIES=hunspell-1.7" >> $GITHUB_ENV
+    #~ - name: Install hunspell on Windows
+      #~ if: startsWith(matrix.os, 'windows') && endsWith(matrix.build_type, 'with hunspell')
+      #~ shell: msys2 {0}
+      #~ run: |
+        #~ curl -Ls https://github.com/hunspell/hunspell/files/2573619/hunspell-1.7.0.tar.gz -o hunspell.tar.gz
+        #~ tar -xf hunspell.tar.gz
+        #~ cd hunspell-1.7.0
+        #~ autoreconf -vfi
+        #~ ./configure
+        #~ make -j2
+        #~ echo "CMAKE_BUILD_EXTRA=-DHunspell_INCLUDE_DIR=$RUNNER_WORKSPACE\hunspell-1.7.0\src\hunspell\hunspell.hxx -DHunspell_LIBRARIES=hunspell-1.7" >> $GITHUB_ENV
 
     - name: Install dependencies
       shell: bash
@@ -132,20 +132,14 @@ jobs:
           autoreconf -vfi
           ./configure
           make -j3
-          echo "CMAKE_BUILD_EXTRA=-DHunspell_INCLUDE_DIR=$RUNNER_WORKSPACE/hunspell-1.7.0/src/hunspell/hunspell.hxx -DHunspell_LIBRARIES=hunspell-1.7" >> $GITHUB_ENV
+          echo "CMAKE_BUILD_EXTRA=-DHunspell_INCLUDE_DIR=$RUNNER_WORKSPACE/hunspell-1.7.0/src/hunspell/ -DHunspell_LIBRARIES=hunspell-1.7" >> $GITHUB_ENV
         fi
 
         # Install Hunspell on Windows
-        #if [[ "${{ matrix.os }}" = "windows"* && "${{ matrix.build_type }}" != *"without"* ]]; then
-        #  curl -Ls https://github.com/hunspell/hunspell/files/2573619/hunspell-1.7.0.tar.gz -o hunspell.tar.gz
-        #  tar -xf hunspell.tar.gz
-        #  cd hunspell-1.7.0
-        #  C:/msys64/usr/bin/pacman -S base-devel mingw-w64-x86_64-toolchain mingw-w64-x86_64-libtool
-        #  autoreconf -vfi
-        #  ./configure
-        #  make -j2
+        if [[ "${{ matrix.os }}" = "windows"* && "${{ matrix.build_type }}" != *"without"* ]]; then
+          vcpkg install hunspell:x64-windows
         #  echo "CMAKE_BUILD_EXTRA=-DHunspell_INCLUDE_DIR=$RUNNER_WORKSPACE\hunspell-1.7.0\src\hunspell\hunspell.hxx -DHunspell_LIBRARIES=hunspell-1.7" >> $GITHUB_ENV
-        #fi
+        fi
 
     - name: Create Build Environment
       shell: bash
