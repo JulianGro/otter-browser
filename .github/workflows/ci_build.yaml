@@ -93,23 +93,23 @@ jobs:
           curl -Ls https://github.com/hunspell/hunspell/files/2573619/hunspell-1.7.0.tar.gz -o hunspell.tar.gz
           tar -xf hunspell.tar.gz
           sudo mkdir -p /usr/local/include/hunspell
-          sudo mv hunspell-1.7.0/src/hunspell/ /usr/local/include/hunspell/
+          sudo mv hunspell-1.7.0/src/hunspell/* /usr/local/include/hunspell/
           ls /usr/local/include/hunspell/
         fi
 
         # Install Hunspell on Windows
-        if [[ "${{ matrix.os }}" = "windows"* ]]; then
-          echo downloading
-          curl -Ls https://github.com/hunspell/hunspell/files/2573619/hunspell-1.7.0.tar.gz -o hunspell.tar.gz
-          echo extracting
-          tar -xf hunspell.tar.gz
-          echo creating directory
-          mkdir -p $RUNNER_WORKSPACE\hunspell
-          echo moving
-          mv hunspell-1.7.0\src\hunspell\ $RUNNER_WORKSPACE\hunspell\
-          echo "Hunspell_INCLUDE_DIR=$RUNNER_WORKSPACE\hunspell\" >> $GITHUB_ENV
-          echo "Hunspell_LIBRARIES=hunspell" >> $GITHUB_ENV
-        fi
+        #if [[ "${{ matrix.os }}" = "windows"* ]]; then
+        #  echo "downloading"
+        #  curl -Ls https://github.com/hunspell/hunspell/files/2573619/hunspell-1.7.0.tar.gz -o hunspell.tar.gz
+        #  echo "extracting"
+        #  tar -xf hunspell.tar.gz
+        #  echo creating directory
+        #  mkdir -p $RUNNER_WORKSPACE\hunspell
+        #  echo moving
+        #  mv hunspell-1.7.0\src\hunspell\* $RUNNER_WORKSPACE\hunspell\
+        #  echo "Hunspell_INCLUDE_DIR=$RUNNER_WORKSPACE\hunspell\" >> $GITHUB_ENV
+        #  echo "Hunspell_LIBRARIES=hunspell" >> $GITHUB_ENV
+        #fi
 
     - name: Create Build Environment
       shell: bash
