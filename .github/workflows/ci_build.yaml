@@ -93,10 +93,11 @@ jobs:
           wget -nv https://github.com/hunspell/hunspell/files/2573619/hunspell-1.7.0.tar.gz
           sudo mkdir -p /usr/local/include/hunspell
           sudo tar -C /usr/local/include/hunspell/ -xf hunspell*.tar.gz hunspell-1.7.0/src/hunspell/*
+          ls /usr/local/include/hunspell/
         fi
 
         if [[ "${{ matrix.os }}" = "windows"* ]]; then
-          echo %INCLUDE%
+          echo %$INCLUDE
         fi
 
     - name: Create Build Environment
