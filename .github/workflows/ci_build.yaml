@@ -80,14 +80,14 @@ jobs:
         version: ${{matrix.qt_version}}
 
     # Installs dependencies needed to build hunspell
-    #- name: Install msys2 on Windows
-    #  if: startsWith(matrix.os, 'windows') && endsWith(matrix.build_type, 'with hunspell')
-    #  uses: msys2/setup-msys2@v2
-    #  with:
-    #    install: >-
-    #      base-devel
-    #      mingw-w64-x86_64-toolchain
-    #      mingw-w64-x86_64-libtool
+    - name: Install msys2 on Windows
+      if: startsWith(matrix.os, 'windows') && endsWith(matrix.build_type, 'with hunspell')
+      uses: msys2/setup-msys2@v2
+      with:
+        install: >-
+          base-devel
+          mingw-w64-x86_64-toolchain
+          mingw-w64-x86_64-libtool
 
     - name: Install hunspell on Windows
       if: startsWith(matrix.os, 'windows') && endsWith(matrix.build_type, 'with hunspell')
@@ -96,7 +96,6 @@ jobs:
         curl -Ls https://github.com/hunspell/hunspell/files/2573619/hunspell-1.7.0.tar.gz -o hunspell.tar.gz
         tar -xf hunspell.tar.gz
         cd hunspell-1.7.0
-        pacman -S base-devel mingw-w64-x86_64-toolchain mingw-w64-x86_64-libtool
         autoreconf -vfi
         ./configure
         make -j2
@@ -124,6 +123,7 @@ jobs:
         # Install Hunspell on MacOS
         if [[ "${{ matrix.os }}" = "macOS"* && "${{ matrix.build_type }}" != *"without"* ]]; then
           echo "Installing Hunspell"
+          cd $RUNNER_WORKSPACE
           curl -Ls https://github.com/hunspell/hunspell/files/2573619/hunspell-1.7.0.tar.gz -o hunspell.tar.gz
           tar -xf hunspell.tar.gz
           cd hunspell-1.7.0
