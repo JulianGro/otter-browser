@@ -99,7 +99,8 @@ jobs:
         autoreconf -vfi
         ./configure
         make -j2
-        echo "CMAKE_BUILD_EXTRA=-DHunspell_INCLUDE_DIR=$RUNNER_WORKSPACE\hunspell-1.7.0\src\hunspell\hunspell.hxx -DHunspell_LIBRARIES=hunspell-1.7" >> $GITHUB_ENV
+        make install
+        #echo "CMAKE_BUILD_EXTRA=-DHunspell_INCLUDE_DIR=$RUNNER_WORKSPACE\hunspell-1.7.0\src\hunspell\hunspell.hxx -DHunspell_LIBRARIES=hunspell-1.7" >> $GITHUB_ENV
 
     - name: Install dependencies
       shell: bash
@@ -132,7 +133,8 @@ jobs:
           autoreconf -vfi
           ./configure
           make -j3
-          echo "CMAKE_BUILD_EXTRA=-DHunspell_INCLUDE_DIR=$RUNNER_WORKSPACE/hunspell-1.7.0/ -DHunspell_LIBRARIES=hunspell-1.7" >> $GITHUB_ENV
+          make install
+          #echo "CMAKE_BUILD_EXTRA=-DHunspell_INCLUDE_DIR=$RUNNER_WORKSPACE/hunspell-1.7.0/ -DHunspell_LIBRARIES=hunspell-1.7" >> $GITHUB_ENV
         fi
 
         # Install Hunspell on Windows
