@@ -92,10 +92,11 @@ jobs:
         if [[ "${{ matrix.os }}" = "macOS"* ]]; then
           curl -Ls https://github.com/hunspell/hunspell/files/2573619/hunspell-1.7.0.tar.gz -o hunspell.tar.gz
           tar -xf hunspell.tar.gz
-          sudo mkdir -p /usr/local/include/hunspell
-          sudo mv hunspell-1.7.0/src/hunspell/* /usr/local/include/hunspell/
-          echo "Hunspell_INCLUDE_DIR=/usr/local/include/hunspell/hunspell.hxx" >> $GITHUB_ENV
-          echo "Hunspell_LIBRARIES=hunspell" >> $GITHUB_ENV
+          mkdir -p "`xcrun --show-sdk-path`"/hunspell/
+          mv hunspell-1.7.0/src/hunspell/* "`xcrun --show-sdk-path`"/hunspell/
+          echo "SDKROOT=`xcrun --show-sdk-path`" >> $GITHUB_ENV
+          echo $SDKROOT
+          ls $SDKROOT/hunspell
         fi
 
         # Install Hunspell on Windows
