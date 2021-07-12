@@ -130,7 +130,7 @@ jobs:
 #          -DHunspell_INCLUDE_DIR
 
     - name: Install dependencies
-      shell: ${{ matrix.shell }}
+      shell: ${{matrix.shell}}
       run: |
 
         # Install APT dependencies on Ubuntu
@@ -170,23 +170,23 @@ jobs:
         #~ fi
 
     - name: Create Build Environment
-      shell: ${{ matrix.shell }}
+      shell: ${{matrix.shell}}
       run: cmake -E make_directory "${{runner.workspace}}/build"
 
     - name: Configure CMake
       working-directory: ${{runner.workspace}}/build
-      shell: ${{ matrix.shell }}
+      shell: ${{matrix.shell}}
       run: cmake $GITHUB_WORKSPACE $CMAKE_BUILD_EXTRA
 
     - name: Build Otter Browser
       working-directory: ${{runner.workspace}}/build
-      shell: ${{ matrix.shell }}
+      shell: ${{matrix.shell}}
       run: cmake --build . --parallel 3
 
     - name: Output system stats
       if: ${{ always() }}
       working-directory: ${{runner.workspace}}/build
-      shell: ${{ matrix.shell }}
+      shell: ${{matrix.shell}}
       run: |
         echo "Disk usage:"
         df -h
