@@ -103,7 +103,7 @@ jobs:
           curl -Lso hunspell.tar.gz https://github.com/hunspell/hunspell/files/2573619/hunspell-1.7.0.tar.gz
           tar -xf hunspell.tar.gz
           mkdir -p $RUNNER_WORKSPACE\hunspell
-          mv hunspell-1.7.0\src\hunspell\ "$RUNNER_WORKSPACE\hunspell\
+          mv hunspell-1.7.0\src\hunspell\ $RUNNER_WORKSPACE\hunspell\
           echo "Hunspell_INCLUDE_DIR=$RUNNER_WORKSPACE\hunspell\" >> $GITHUB_ENV
           echo "Hunspell_LIBRARIES=hunspell" >> $GITHUB_ENV
         fi
