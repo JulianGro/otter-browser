@@ -23,7 +23,7 @@ jobs:
 #              build_type: qtwebengine without hunspell
 #              qt_version: 5.15.2
             - os: windows-latest
-              build_type: qtwebkit with hunspell
+              build_type: qtwebkit without hunspell
               qt_version: 5.15.2
 #            - os: ubuntu-18.04
 #              build_type: qtwebkit with hunspell
@@ -55,9 +55,9 @@ jobs:
 #              build_type: qtwebengine without hunspell
 #              qt_version: 5.15.2
              #TODO: Install QtWebKit on MacOS
-            - os: macOS-latest
-              build_type: qtwebkit with hunspell
-              qt_version: 5.15.2
+            #~ - os: macOS-latest
+              #~ build_type: qtwebkit with hunspell
+              #~ qt_version: 5.15.2
 
     steps:
     - name: Get Otter Browser source
@@ -66,18 +66,27 @@ jobs:
         submodules: false
         fetch-depth: 1
 
+    - name: Cache Qt
+      id: cache-qt
+      uses: actions/cache@v1
+      with:
+        path: ../Qt
+        key: ${{ runner.os }}-QtCache
+
     - name: Install Qt ${{matrix.qt_version}} with QtWebEngine
       if: startsWith(matrix.os, 'windows') && startsWith(matrix.build_type, 'qtwebengine') || startsWith(matrix.os, 'macos') && startsWith(matrix.build_type, 'qtwebengine') || startsWith(matrix.os, 'ubuntu') && !startsWith(matrix.qt_version, 'repository') && startsWith(matrix.build_type, 'qtwebengine')
       uses: jurplel/install-qt-action@v2
       with:
         version: ${{matrix.qt_version}}
         modules: qtwebengine
+        cached: ${{steps.cache-qt.outputs.cache-hit}}
 
     - name: Install Qt ${{matrix.qt_version}} without QtWebEngine
       if: startsWith(matrix.os, 'windows') && startsWith(matrix.build_type, 'qtwebkit') || startsWith(matrix.os, 'macos') && startsWith(matrix.build_type, 'qtwebkit') || startsWith(matrix.os, 'ubuntu') && !startsWith(matrix.qt_version, 'repository') && startsWith(matrix.build_type, 'qtwebkit')
       uses: jurplel/install-qt-action@v2
       with:
         version: ${{matrix.qt_version}}
+        cached: ${{steps.cache-qt.outputs.cache-hit}}
 
     #~ - name: Install hunspell dependencies on Windows
       #~ if: startsWith(matrix.os, 'windows') && endsWith(matrix.build_type, 'with hunspell')
@@ -139,13 +148,18 @@ jobs:
           brew install hunspell
         fi
 
-        # Install QtWebKit on MacOS from source
-        if [[ "${{ matrix.os }}" = "macOS"* && "${{ matrix.build_type }}" = "qtwebkit"* ]]; then
-          echo "Installing QtWebKit 5.212 from git"
-          brew install conan
-          git clone  --single-branch --branch 5.212 --depth 1 git://code.qt.io/qt/qtwebkit.git
-          cd qtwebkit
-          sudo Tools/qt/build-qtwebkit-conan.py --qt=$RUNNER_WORKSPACE/Qt/${{matrix.qt_version}}/clang_64 --install
+        #~ # Install QtWebKit on MacOS from source
+        #~ if [[ "${{ matrix.os }}" = "macOS"* && "${{ matrix.build_type }}" = "qtwebkit"* ]]; then
+          #~ echo "Installing QtWebKit 5.212 from git"
+          #~ brew install conan
+          #~ git clone  --single-branch --branch 5.212 --depth 1 git://code.qt.io/qt/qtwebkit.git
+          #~ cd qtwebkit
+          #~ Tools/qt/build-qtwebkit-conan.py --qt=$RUNNER_WORKSPACE/Qt/${{matrix.qt_version}}/clang_64 --install
+        #~ fi
+
+        # Install QtWebKit on Windows
+        if [[ "${{ matrix.os }}" = "windows"* && "${{ matrix.build_type }}" = "qtwebkit"* ]]; then
+          conda install -c conda-forge qtwebkit
         fi
 
         # Install Hunspell on Windows
