@@ -149,7 +149,7 @@ jobs:
     - name: Build Otter Browser
       working-directory: ${{runner.workspace}}/build
       shell: bash
-      run: cmake $CMAKE_BUILD_EXTRA --build . --parallel 3
+      run: cmake $CMAKE_BUILD_EXTRA --parallel 3 --build .
 
     - name: Output system stats
       if: ${{ always() }}
