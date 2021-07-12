@@ -18,57 +18,46 @@ jobs:
             - os: windows-latest
               build_type: qtwebengine with hunspell
               qt_version: 5.15.2
-              shell: msys2 {0}
             # Windows fails if libhunspell-dev is missing. See https://github.com/OtterBrowser/otter-browser/issues/1684
 #            - os: windows-latest
 #              build_type: qtwebengine without hunspell
 #              qt_version: 5.15.2
-#              shell: bash
             - os: windows-latest
               build_type: qtwebkit with hunspell
               qt_version: 5.15.2
-              shell: msys2 {0}
 #            - os: ubuntu-18.04
 #              build_type: qtwebkit with hunspell
 #              qt_version: repository
-#              shell: bash
 #              apt-dependencies: git build-essential cmake qtbase5-dev libqt5core5a libqt5gui5 libqt5multimedia5 qtmultimedia5-dev libqt5network5 libqt5printsupport5 libqt5qml5 qtdeclarative5-dev libqt5svg5 libqt5svg5-dev libqt5widgets5 libhunspell-dev libqt5webkit5 libqt5webkit5-dev
 #            - os: ubuntu-18.04
 #              build_type: qtwebkit without hunspell
 #              qt_version: repository
-#              shell: bash
 #              apt-dependencies: git build-essential cmake qtbase5-dev libqt5core5a libqt5gui5 libqt5multimedia5 qtmultimedia5-dev libqt5network5 libqt5printsupport5 libqt5qml5 qtdeclarative5-dev libqt5svg5 libqt5svg5-dev libqt5widgets5 libqt5webkit5 libqt5webkit5-dev
 #            - os: ubuntu-18.04
 #              build_type: qtwebengine with hunspell
 #              qt_version: 5.15.2
-#              shell: bash
 #              apt-dependencies: git build-essential cmake libhunspell-dev
             # TODO: Figure out how to install QtWebKit without installing its dependencies from APT
             #- os: ubuntu-18.04
             #  build_type: qtwebkit
             #  qt_version: 5.15.2
-            #  shell: bash
             # apt-dependencies: git build-essential cmake libhunspell-dev
 #            - os: ubuntu-20.04
 #              build_type: qtwebkit with hunspell
 #              qt_version: repository
-#              shell: bash
 #              apt-dependencies: git build-essential cmake qtbase5-dev libqt5core5a libqt5gui5 libqt5multimedia5 qtmultimedia5-dev libqt5network5 libqt5printsupport5 libqt5qml5 qtdeclarative5-dev libqt5svg5 libqt5svg5-dev libqt5widgets5 libhunspell-dev libqt5webkit5 libqt5webkit5-dev
 
 #            - os: macOS-latest
 #              build_type: qtwebengine with hunspell
 #              qt_version: 5.15.2
-#              shell: bash
             # MacOS fails if libhunspell-dev is missing. See https://github.com/OtterBrowser/otter-browser/issues/1684
 #            - os: macOS-latest
 #              build_type: qtwebengine without hunspell
 #              qt_version: 5.15.2
-#              shell: bash
              #TODO: Install QtWebKit on MacOS
             - os: macOS-latest
               build_type: qtwebkit with hunspell
               qt_version: 5.15.2
-              shell: bash
 
     steps:
     - name: Get Otter Browser source
@@ -90,29 +79,25 @@ jobs:
       with:
         version: ${{matrix.qt_version}}
 
-    - name: Install hunspell dependencies on Windows
-      if: startsWith(matrix.os, 'windows') && endsWith(matrix.build_type, 'with hunspell')
-      uses: msys2/setup-msys2@v2
-      with:
-        install: >-
-          mingw-w64-x86_64-hunspell
+    #~ - name: Install hunspell dependencies on Windows
+      #~ if: startsWith(matrix.os, 'windows') && endsWith(matrix.build_type, 'with hunspell')
+      #~ uses: msys2/setup-msys2@v2
+      #~ with:
+        #~ install: >-
+          #~ base-devel
+          #~ mingw-w64-x86_64-toolchain
+          #~ mingw-w64-x86_64-libtool
 
-
-
-#          base-devel
-#          mingw-w64-x86_64-toolchain
-#          mingw-w64-x86_64-libtool
-
-    - name: Install QtWebKit on Windows
-      if: startsWith(matrix.os, 'windows') && startsWith(matrix.build_type, 'qtwebkit')
-      uses: msys2/setup-msys2@v2
-      with:
-        install: >-
-          mingw-w64-x86_64-qtwebkit
+    #~ - name: Install QtWebKit on Windows
+      #~ if: startsWith(matrix.os, 'windows') && startsWith(matrix.build_type, 'qtwebkit')
+      #~ uses: msys2/setup-msys2@v2
+      #~ with:
+        #~ install: >-
+          #~ mingw-w64-x86_64-qtwebkit
 
     #~ - name: Install hunspell on Windows
       #~ if: startsWith(matrix.os, 'windows') && endsWith(matrix.build_type, 'with hunspell')
-      #~ shell: ${{ matrix.shell }}
+      #~ shell: bash
       #~ run: |
         #~ curl -Ls https://github.com/hunspell/hunspell/files/2573619/hunspell-1.7.0.tar.gz -o hunspell.tar.gz
         #~ tar -xf hunspell.tar.gz
@@ -130,7 +115,7 @@ jobs:
 #          -DHunspell_INCLUDE_DIR
 
     - name: Install dependencies
-      shell: ${{matrix.shell}}
+      shell: bash
       run: |
 
         # Install APT dependencies on Ubuntu
@@ -164,29 +149,29 @@ jobs:
         fi
 
         # Install Hunspell on Windows
-        #~ if [[ "${{ matrix.os }}" = "windows"* && "${{ matrix.build_type }}" != *"without"* ]]; then
-          #~ vcpkg install hunspell:x64-windows
-        #~ #  echo "CMAKE_BUILD_EXTRA=-DHunspell_INCLUDE_DIR=$RUNNER_WORKSPACE\hunspell-1.7.0\src\hunspell\hunspell.hxx -DHunspell_LIBRARIES=hunspell-1.7" >> $GITHUB_ENV
-        #~ fi
+        if [[ "${{ matrix.os }}" = "windows"* && "${{ matrix.build_type }}" != *"without"* ]]; then
+          vcpkg install hunspell:x64-windows
+        #  echo "CMAKE_BUILD_EXTRA=-DHunspell_INCLUDE_DIR=$RUNNER_WORKSPACE\hunspell-1.7.0\src\hunspell\hunspell.hxx -DHunspell_LIBRARIES=hunspell-1.7" >> $GITHUB_ENV
+        fi
 
     - name: Create Build Environment
-      shell: ${{matrix.shell}}
+      shell: bash
       run: cmake -E make_directory "${{runner.workspace}}/build"
 
     - name: Configure CMake
       working-directory: ${{runner.workspace}}/build
-      shell: ${{matrix.shell}}
+      shell: bash
       run: cmake $GITHUB_WORKSPACE $CMAKE_BUILD_EXTRA
 
     - name: Build Otter Browser
       working-directory: ${{runner.workspace}}/build
-      shell: ${{matrix.shell}}
+      shell: bash
       run: cmake --build . --parallel 3
 
     - name: Output system stats
       if: ${{ always() }}
       working-directory: ${{runner.workspace}}/build
-      shell: ${{matrix.shell}}
+      shell: bash
       run: |
         echo "Disk usage:"
         df -h
