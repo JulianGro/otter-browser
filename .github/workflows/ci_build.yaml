@@ -95,7 +95,7 @@ jobs:
           sudo mkdir -p /usr/local/include/hunspell
           sudo mv hunspell-1.7.0/src/hunspell/* /usr/local/include/hunspell/
           echo "Hunspell_INCLUDE_DIR=/usr/local/include/hunspell/" >> $GITHUB_ENV
-          echo "Hunspell_LIBRARIES=hunspell" >> $GITHUB_ENV
+          echo "Hunspell_LIBRARIES=hunspell-1.7" >> $GITHUB_ENV
         fi
 
         # Install Hunspell on Windows
