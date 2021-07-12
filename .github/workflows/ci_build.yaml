@@ -102,7 +102,7 @@ jobs:
         curl -Ls https://github.com/hunspell/hunspell/files/2573619/hunspell-1.7.0.tar.gz -o hunspell.tar.gz
         tar -xf hunspell.tar.gz
         cd hunspell-1.7.0
-        msys2do autoreconf -vfi
+        msys2 autoreconf -vfi
         ./configure
         make -j2
         make install
@@ -143,9 +143,8 @@ jobs:
         if [[ "${{ matrix.os }}" = "macOS"* && "${{ matrix.build_type }}" = "qtwebkit"* ]]; then
           echo "Installing QtWebKit 5.212 from git"
           brew install conan
-          git clone  --depth 1 git://code.qt.io/qt/qtwebkit.git
+          git clone  --single-branch --branch 5.212 --depth 1 git://code.qt.io/qt/qtwebkit.git
           cd qtwebkit
-          git checkout 5.212
           Tools/qt/build-qtwebkit-conan.py --qt=$RUNNER_WORKSPACE/Qt/${{matrix.qt_version}}/clang_64 --install
         fi
 
