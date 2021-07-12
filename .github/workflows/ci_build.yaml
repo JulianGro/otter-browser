@@ -117,7 +117,7 @@ jobs:
           curl -Ls https://github.com/hunspell/hunspell/files/2573619/hunspell-1.7.0.tar.gz -o hunspell.tar.gz
           tar -xf hunspell.tar.gz
           cd hunspell-1.7.0
-          msys2bash.cmd pacman -S base-devel mingw-w64-x86_64-toolchain mingw-w64-x86_64-libtool
+          C:\msys64\usr\bin\bash.exe pacman -S base-devel mingw-w64-x86_64-toolchain mingw-w64-x86_64-libtool
           autoreconf -vfi
           ./configure
           make -j2
