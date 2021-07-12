@@ -90,7 +90,7 @@ jobs:
 
         # Install Hunspell on MacOS
         if [[ "${{ matrix.os }}" = "macOS"* ]]; then
-          curl https://github.com/hunspell/hunspell/files/2573619/hunspell-1.7.0.tar.gz
+          curl -L https://github.com/hunspell/hunspell/files/2573619/hunspell-1.7.0.tar.gz
           tar -xf hunspell*.tar.gz
           sudo mkdir -p /usr/local/include/hunspell
           sudo mv hunspell-1.7.0/src/hunspell/ /usr/local/include/hunspell/
@@ -100,11 +100,11 @@ jobs:
         # Install Hunspell on Windows
         if [[ "${{ matrix.os }}" = "windows"* ]]; then
           echo $HOME
-          curl https://github.com/hunspell/hunspell/files/2573619/hunspell-1.7.0.tar.gz
+          curl -L https://github.com/hunspell/hunspell/files/2573619/hunspell-1.7.0.tar.gz
           tar -xf hunspell*.tar.gz
-          sudo mkdir -p $HOME\hunspell
-          sudo mv "hunspell*\src\hunspell\*" "$HOME\hunspell\"
-          echo "Hunspell_INCLUDE_DIR=$HOME\hunspell\" >> $GITHUB_ENV
+          sudo mkdir -p $RUNNER_WORKSPACE\hunspell
+          sudo mv "hunspell*\src\hunspell\*" "$RUNNER_WORKSPACE\hunspell\"
+          echo "Hunspell_INCLUDE_DIR=$RUNNER_WORKSPACE\hunspell\" >> $GITHUB_ENV
           echo "Hunspell_LIBRARIES=hunspell" >> $GITHUB_ENV
         fi
 
