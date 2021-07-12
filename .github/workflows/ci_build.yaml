@@ -16,9 +16,9 @@ jobs:
         matrix:
           include:
             # Windows fails because libhunspell-dev is missing. See https://github.com/OtterBrowser/otter-browser/issues/1684
-            - os: windows-latest
-              build_type: qtwebengine
-              qt_version: 5.15.2
+            #- os: windows-latest
+            #  build_type: qtwebengine
+            #  qt_version: 5.15.2
             # TODO: Install QtWebKit on Windows
             #- os: windows-latest
             #  build_type: qtwebkit
