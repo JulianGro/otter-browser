@@ -9,40 +9,50 @@ on:
 
 jobs:
   build:
-    name: "${{matrix.os}}, ${{matrix.qt_version}}, ${{matrix.build_type}}"
+    name: "${{matrix.os}}, ${{matrix.qt_version}}, ${{matrix.build_type}} "
     runs-on: ${{matrix.os}}
     strategy:
         fail-fast: false
         matrix:
           include:
             # Windows fails because libhunspell-dev is missing. See https://github.com/OtterBrowser/otter-browser/issues/1684
-            #- os: windows-latest
-            #  build_type: qtwebengine
-            #  qt_version: 5.15.2
+            - os: windows-latest
+              build_type: qtwebengine with hunspell
+              qt_version: 5.15.2
+            - os: windows-latest
+              build_type: qtwebengine without hunspell
+              qt_version: 5.15.2
             # TODO: Install QtWebKit on Windows
             #- os: windows-latest
             #  build_type: qtwebkit
             #  qt_version: 5.15.2
-#            - os: ubuntu-18.04
-#              build_type: qtwebkit
-#              qt_version: repository
-#              apt-dependencies: git build-essential cmake qtbase5-dev libqt5core5a libqt5gui5 libqt5multimedia5 qtmultimedia5-dev libqt5network5 libqt5printsupport5 libqt5qml5 qtdeclarative5-dev libqt5svg5 libqt5svg5-dev libqt5widgets5 libhunspell-dev libqt5webkit5 libqt5webkit5-dev
-#            - os: ubuntu-18.04
-#              build_type: qtwebengine
-#              qt_version: 5.15.2
-#              apt-dependencies: git build-essential cmake libhunspell-dev
+            - os: ubuntu-18.04
+              build_type: qtwebkit with hunspell
+              qt_version: repository
+              apt-dependencies: git build-essential cmake qtbase5-dev libqt5core5a libqt5gui5 libqt5multimedia5 qtmultimedia5-dev libqt5network5 libqt5printsupport5 libqt5qml5 qtdeclarative5-dev libqt5svg5 libqt5svg5-dev libqt5widgets5 libhunspell-dev libqt5webkit5 libqt5webkit5-dev
+            - os: ubuntu-18.04
+              build_type: qtwebkit without hunspell
+              qt_version: repository
+              apt-dependencies: git build-essential cmake qtbase5-dev libqt5core5a libqt5gui5 libqt5multimedia5 qtmultimedia5-dev libqt5network5 libqt5printsupport5 libqt5qml5 qtdeclarative5-dev libqt5svg5 libqt5svg5-dev libqt5widgets5 libqt5webkit5 libqt5webkit5-dev
+            - os: ubuntu-18.04
+              build_type: qtwebengine with hunspell
+              qt_version: 5.15.2
+              apt-dependencies: git build-essential cmake libhunspell-dev
             # TODO: Figure out how to install QtWebKit without installing its dependencies from APT
             #- os: ubuntu-18.04
             #  build_type: qtwebkit
             #  qt_version: 5.15.2
             # apt-dependencies: git build-essential cmake libhunspell-dev
-#            - os: ubuntu-20.04
-#              build_type: qtwebkit
-#              qt_version: repository
-#              apt-dependencies: git build-essential cmake qtbase5-dev libqt5core5a libqt5gui5 libqt5multimedia5 qtmultimedia5-dev libqt5network5 libqt5printsupport5 libqt5qml5 qtdeclarative5-dev libqt5svg5 libqt5svg5-dev libqt5widgets5 libhunspell-dev libqt5webkit5 libqt5webkit5-dev
+            - os: ubuntu-20.04
+              build_type: qtwebkit with hunspell
+              qt_version: repository
+              apt-dependencies: git build-essential cmake qtbase5-dev libqt5core5a libqt5gui5 libqt5multimedia5 qtmultimedia5-dev libqt5network5 libqt5printsupport5 libqt5qml5 qtdeclarative5-dev libqt5svg5 libqt5svg5-dev libqt5widgets5 libhunspell-dev libqt5webkit5 libqt5webkit5-dev
             # MacOS fails because libhunspell-dev is missing. See https://github.com/OtterBrowser/otter-browser/issues/1684
             - os: macOS-latest
-              build_type: qtwebengine
+              build_type: qtwebengine with hunspell
+              qt_version: 5.15.2
+            - os: macOS-latest
+              build_type: qtwebengine without hunspell
               qt_version: 5.15.2
             # TODO: Install QtWebKit on MacOS
             #- os: macOS-latest
@@ -89,28 +99,30 @@ jobs:
         #fi
 
         # Install Hunspell on MacOS
-        if [[ "${{ matrix.os }}" = "macOS"* ]]; then
+        if [[ "${{ matrix.os }}" = "macOS"* && "${{ matrix.build_type }}" != *"without"* ]]; then
           curl -Ls https://github.com/hunspell/hunspell/files/2573619/hunspell-1.7.0.tar.gz -o hunspell.tar.gz
           tar -xf hunspell.tar.gz
-          sudo mkdir -p "`xcrun --show-sdk-path`"/usr/include/hunspell/
-          sudo mv hunspell-1.7.0/src/hunspell/* "`xcrun --show-sdk-path`"/usr/include/hunspell/
-          echo "SDKROOT=`xcrun --show-sdk-path`" >> $GITHUB_ENV
-          ls "`xcrun --show-sdk-path`"/usr/include/hunspell
+          cd hunspell-1.7.0
+          #brew install autoconf automake libtool gettext
+          #brew link gettext --force
+          autoreconf -vfi
+          ./configure
+          make
+          echo "CMAKE_BUILD_EXTRA=-DHunspell_INCLUDE_DIR=$RUNNER_WORKSPACE/hunspell-1.7.0/src/hunspell/hunspell.hxx -DHunspell_LIBRARIES=hunspell-1.7" >> $GITHUB_ENV
         fi
 
         # Install Hunspell on Windows
-        #if [[ "${{ matrix.os }}" = "windows"* ]]; then
-        #  echo "downloading"
-        #  curl -Ls https://github.com/hunspell/hunspell/files/2573619/hunspell-1.7.0.tar.gz -o hunspell.tar.gz
-        #  echo "extracting"
-        #  tar -xf hunspell.tar.gz
-        #  echo creating directory
-        #  mkdir -p $RUNNER_WORKSPACE\hunspell
-        #  echo moving
-        #  mv hunspell-1.7.0\src\hunspell\* $RUNNER_WORKSPACE\hunspell\
-        #  echo "Hunspell_INCLUDE_DIR=$RUNNER_WORKSPACE\hunspell\hunspell.hxx" >> $GITHUB_ENV
-        #  echo "Hunspell_LIBRARIES=hunspell-1.7" >> $GITHUB_ENV
-        #fi
+        if [[ "${{ matrix.os }}" = "windows"* && "${{ matrix.build_type }}" != *"without"* ]]; then
+          curl -Ls https://github.com/hunspell/hunspell/files/2573619/hunspell-1.7.0.tar.gz -o hunspell.tar.gz
+          tar -xf hunspell.tar.gz
+          cd hunspell-1.7.0
+          #brew install autoconf automake libtool gettext
+          #brew link gettext --force
+          autoreconf -vfi
+          ./configure
+          make
+          echo "CMAKE_BUILD_EXTRA=-DHunspell_INCLUDE_DIR=$RUNNER_WORKSPACE/hunspell-1.7.0/src/hunspell/hunspell.hxx -DHunspell_LIBRARIES=hunspell-1.7" >> $GITHUB_ENV
+        fi
 
     - name: Create Build Environment
       shell: bash
@@ -119,7 +131,7 @@ jobs:
     - name: Configure CMake
       working-directory: ${{runner.workspace}}/build
       shell: bash
-      run: cmake $GITHUB_WORKSPACE
+      run: cmake $GITHUB_WORKSPACE $CMAKE_BUILD_EXTRA
 
     - name: Build Otter Browser
       working-directory: ${{runner.workspace}}/build
