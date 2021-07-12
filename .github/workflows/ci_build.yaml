@@ -159,7 +159,7 @@ jobs:
 
         # Install QtWebKit on Windows
         if [[ "${{ matrix.os }}" = "windows"* && "${{ matrix.build_type }}" = "qtwebkit"* ]]; then
-          conda install -c conda-forge qtwebkit
+          $CONDA/conda install -c conda-forge qtwebkit
         fi
 
         # Install Hunspell on Windows
