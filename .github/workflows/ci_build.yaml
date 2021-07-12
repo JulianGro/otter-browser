@@ -158,12 +158,12 @@ jobs:
         #~ fi
 
         if [[ "${{ matrix.os }}" = "macOS"* && "${{ matrix.build_type }}" = "qtwebkit"* ]]; then
-          conda install -c conda-forge qtwebkit
+          sudo conda install -c conda-forge qtwebkit
         fi
 
         # Install QtWebKit on Windows
         if [[ "${{ matrix.os }}" = "windows"* && "${{ matrix.build_type }}" = "qtwebkit"* ]]; then
-          "$CONDA\conda.exe" install -c conda-forge qtwebkit
+          "$CONDA\bin\conda.exe" install -c conda-forge qtwebkit
         fi
 
         # Install Hunspell on Windows
