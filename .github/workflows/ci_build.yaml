@@ -40,10 +40,10 @@ jobs:
               build_type: qtwebkit
               qt_version: repository
               apt-dependencies: git build-essential cmake qtbase5-dev libqt5core5a libqt5gui5 libqt5multimedia5 qtmultimedia5-dev libqt5network5 libqt5printsupport5 libqt5qml5 qtdeclarative5-dev libqt5svg5 libqt5svg5-dev libqt5widgets5 libhunspell-dev libqt5webkit5 libqt5webkit5-dev
-            # MacOS fails because libhunspell-dev is missing. See https://github.com/OtterBrowser/otter-browser/issues/1684
-            #- os: macOS-latest
-            #  build_type: qtwebengine
-            #  qt_version: 5.15.2
+             MacOS fails because libhunspell-dev is missing. See https://github.com/OtterBrowser/otter-browser/issues/1684
+            - os: macOS-latest
+              build_type: qtwebengine
+              qt_version: 5.15.2
             # TODO: Install QtWebKit on MacOS
             #- os: macOS-latest
             #  build_type: qtwebkit
@@ -86,6 +86,13 @@ jobs:
         #    apt-get download libqt5webkit5 libqt5webkit5-dev
         #    sudo dpkg --force-all -i libqt5webkit5*.deb
         #fi
+
+        # Install Hunspell on MacOS
+        if [[ "${{ matrix.os }}" = "macos"* ]]; then
+          wget https://github.com/hunspell/hunspell/files/2573619/hunspell-1.7.0.tar.gz
+          sudo mkdir -p /usr/include/hunspell
+          sudo tar -xf hunspell*.tar.gz /hunspell-1.7.0/src/hunspell/* -C /usr/include/hunspell/
+        fi
 
     - name: Create Build Environment
       shell: bash
