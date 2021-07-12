@@ -95,8 +95,7 @@ jobs:
           sudo mkdir -p "`xcrun --show-sdk-path`"/usr/include/hunspell/
           sudo mv hunspell-1.7.0/src/hunspell/* "`xcrun --show-sdk-path`"/usr/include/hunspell/
           echo "SDKROOT=`xcrun --show-sdk-path`" >> $GITHUB_ENV
-          echo $SDKROOT
-          ls $SDKROOT/usr/include/hunspell
+          ls "`xcrun --show-sdk-path`"/usr/include/hunspell
         fi
 
         # Install Hunspell on Windows
@@ -109,7 +108,7 @@ jobs:
         #  mkdir -p $RUNNER_WORKSPACE\hunspell
         #  echo moving
         #  mv hunspell-1.7.0\src\hunspell\* $RUNNER_WORKSPACE\hunspell\
-        #  echo "Hunspell_INCLUDE_DIR=$RUNNER_WORKSPACE\hunspell\" >> $GITHUB_ENV
+        #  echo "Hunspell_INCLUDE_DIR=$RUNNER_WORKSPACE\hunspell\hunspell.hxx" >> $GITHUB_ENV
         #  echo "Hunspell_LIBRARIES=hunspell-1.7" >> $GITHUB_ENV
         #fi
 
