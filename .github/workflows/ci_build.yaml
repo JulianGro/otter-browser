@@ -90,7 +90,7 @@ jobs:
         #fi
 
         # Install Hunspell on MacOS
-        if [[ "${{ matrix.os }}" = "macos"* ]]; then
+        if [[ "${{ matrix.os }}" = "macOS"* ]]; then
           wget https://github.com/hunspell/hunspell/files/2573619/hunspell-1.7.0.tar.gz
           sudo mkdir -p /usr/include/hunspell
           sudo tar -xf hunspell*.tar.gz /hunspell-1.7.0/src/hunspell/* -C /usr/include/hunspell/
