@@ -86,7 +86,7 @@ jobs:
         install: >-
           base-devel
           mingw-w64-x86_64-toolchain
-          mingw-w64-x86_64-libtoo
+          mingw-w64-x86_64-libtool
 
     - name: Install QtWebKit on Windows
       if: startsWith(matrix.os, 'windows') && startsWith(matrix.build_type, 'qtwebkit')
