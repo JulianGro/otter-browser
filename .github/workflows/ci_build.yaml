@@ -109,7 +109,7 @@ jobs:
         #  echo moving
         #  mv hunspell-1.7.0\src\hunspell\* $RUNNER_WORKSPACE\hunspell\
         #  echo "Hunspell_INCLUDE_DIR=$RUNNER_WORKSPACE\hunspell\" >> $GITHUB_ENV
-        #  echo "Hunspell_LIBRARIES=hunspell" >> $GITHUB_ENV
+        #  echo "Hunspell_LIBRARIES=hunspell-1.7" >> $GITHUB_ENV
         #fi
 
     - name: Create Build Environment
