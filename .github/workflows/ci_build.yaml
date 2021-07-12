@@ -54,7 +54,7 @@ jobs:
 #            - os: macOS-latest
 #              build_type: qtwebengine without hunspell
 #              qt_version: 5.15.2
-             TODO: Install QtWebKit on MacOS
+             #TODO: Install QtWebKit on MacOS
             - os: macOS-latest
               build_type: qtwebkit with hunspell
               qt_version: 5.15.2
