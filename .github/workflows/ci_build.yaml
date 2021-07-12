@@ -90,7 +90,7 @@ jobs:
 
         # Install Hunspell on MacOS
         if [[ "${{ matrix.os }}" = "macOS"* ]]; then
-          curl -Lso hunspell.tar.gz https://github.com/hunspell/hunspell/files/2573619/hunspell-1.7.0.tar.gz
+          curl -Ls https://github.com/hunspell/hunspell/files/2573619/hunspell-1.7.0.tar.gz -o hunspell.tar.gz
           tar -xf hunspell.tar.gz
           sudo mkdir -p /usr/local/include/hunspell
           sudo mv hunspell-1.7.0/src/hunspell/ /usr/local/include/hunspell/
@@ -100,7 +100,7 @@ jobs:
         # Install Hunspell on Windows
         if [[ "${{ matrix.os }}" = "windows"* ]]; then
           echo downloading
-          curl -Lso hunspell.tar.gz https://github.com/hunspell/hunspell/files/2573619/hunspell-1.7.0.tar.gz
+          curl -Ls https://github.com/hunspell/hunspell/files/2573619/hunspell-1.7.0.tar.gz -o hunspell.tar.gz
           echo extracting
           tar -xf hunspell.tar.gz
           echo creating directory
