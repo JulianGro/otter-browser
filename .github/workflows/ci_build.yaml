@@ -71,14 +71,16 @@ jobs:
 
     - name: Install dependencies
       shell: bash
-      if: startsWith(matrix.os, 'ubuntu')
+      if: startsWith(matrix.os, 'ubuntu') || startsWith(matrix.os, 'macos')
       run: |
 
-        echo "Updating apt repository index"
-        sudo apt update
-
-        echo "Installing apt packages"
-        sudo apt install -y ${{ matrix.apt-dependencies }}
+        # Install APT dependencies on Ubuntu
+        if [[ "${{ matrix.os }}" = "ubuntu"* ]]; then
+          echo "Updating apt repository index"
+          sudo apt update
+          echo "Installing apt packages"
+          sudo apt install -y ${{ matrix.apt-dependencies }}
+        fi
 
         # Install QtWebKit without installing Qt from the repositories.
         #if [[ "${{ matrix.build_type }}" = "qtwebkit" && "${{ matrix.qt_version }}" != "repository" ]]; then
