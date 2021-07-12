@@ -79,22 +79,24 @@ jobs:
       with:
         version: ${{matrix.qt_version}}
 
-    - name: Install msys2 on Windows
-      if: startsWith(matrix.os, 'windows') && endsWith(matrix.build_type, 'with hunspell')
-      uses: msys2/setup-msys2@v2
-      with:
-        install: >-
-          base-devel
-          mingw-w64-x86_64-toolchain
-          mingw-w64-x86_64-libtool
+    # Installs dependencies needed to build hunspell
+    #- name: Install msys2 on Windows
+    #  if: startsWith(matrix.os, 'windows') && endsWith(matrix.build_type, 'with hunspell')
+    #  uses: msys2/setup-msys2@v2
+    #  with:
+    #    install: >-
+    #      base-devel
+    #      mingw-w64-x86_64-toolchain
+    #      mingw-w64-x86_64-libtool
 
     - name: Install hunspell on Windows
       if: startsWith(matrix.os, 'windows') && endsWith(matrix.build_type, 'with hunspell')
-      shell: msys2
+      shell: msys2 {0}
       run: |
         curl -Ls https://github.com/hunspell/hunspell/files/2573619/hunspell-1.7.0.tar.gz -o hunspell.tar.gz
         tar -xf hunspell.tar.gz
         cd hunspell-1.7.0
+        pacman -S base-devel mingw-w64-x86_64-toolchain mingw-w64-x86_64-libtool
         autoreconf -vfi
         ./configure
         make -j2
