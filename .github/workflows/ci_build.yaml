@@ -99,10 +99,13 @@ jobs:
 
         # Install Hunspell on Windows
         if [[ "${{ matrix.os }}" = "windows"* ]]; then
-          echo $HOME
+          echo downloading
           curl -Lso hunspell.tar.gz https://github.com/hunspell/hunspell/files/2573619/hunspell-1.7.0.tar.gz
+          echo extracting
           tar -xf hunspell.tar.gz
+          echo creating directory
           mkdir -p $RUNNER_WORKSPACE\hunspell
+          echo moving
           mv hunspell-1.7.0\src\hunspell\ $RUNNER_WORKSPACE\hunspell\
           echo "Hunspell_INCLUDE_DIR=$RUNNER_WORKSPACE\hunspell\" >> $GITHUB_ENV
           echo "Hunspell_LIBRARIES=hunspell" >> $GITHUB_ENV
