@@ -91,13 +91,21 @@ jobs:
         # Install Hunspell on MacOS
         if [[ "${{ matrix.os }}" = "macOS"* ]]; then
           wget -nv https://github.com/hunspell/hunspell/files/2573619/hunspell-1.7.0.tar.gz
+          tar -xf hunspell*.tar.gz
           sudo mkdir -p /usr/local/include/hunspell
-          sudo tar -C /usr/local/include/hunspell/ -xf hunspell*.tar.gz hunspell-1.7.0/src/hunspell/*
+          sudo mv hunspell*/src/hunspell/* /usr/local/include/hunspell/*
           ls /usr/local/include/hunspell/
         fi
 
+        # Install Hunspell on Windows
         if [[ "${{ matrix.os }}" = "windows"* ]]; then
-          echo %$INCLUDE
+          echo $HOME
+          wget -nv https://github.com/hunspell/hunspell/files/2573619/hunspell-1.7.0.tar.gz
+          tar -xf hunspell*.tar.gz
+          sudo mkdir -p $HOME\hunspell
+          sudo mv hunspell*\src\hunspell\* $HOME\hunspell\
+          echo "Hunspell_INCLUDE_DIR=$HOME\hunspell\" >> $GITHUB_ENV
+          echo "Hunspell_LIBRARIES=hunspell" >> $GITHUB_ENV
         fi
 
     - name: Create Build Environment
