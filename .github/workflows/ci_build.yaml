@@ -54,10 +54,10 @@ jobs:
 #            - os: macOS-latest
 #              build_type: qtwebengine without hunspell
 #              qt_version: 5.15.2
-            # TODO: Install QtWebKit on MacOS
-            #- os: macOS-latest
-            #  build_type: qtwebkit with hunspell
-            #  qt_version: 5.15.2
+             TODO: Install QtWebKit on MacOS
+            - os: macOS-latest
+              build_type: qtwebkit with hunspell
+              qt_version: 5.15.2
 
     steps:
     - name: Get Otter Browser source
@@ -97,7 +97,7 @@ jobs:
 
     - name: Install hunspell on Windows
       if: startsWith(matrix.os, 'windows') && endsWith(matrix.build_type, 'with hunspell')
-      shell: msys2 {0}
+      shell: bash
       run: |
         curl -Ls https://github.com/hunspell/hunspell/files/2573619/hunspell-1.7.0.tar.gz -o hunspell.tar.gz
         tar -xf hunspell.tar.gz
@@ -106,7 +106,13 @@ jobs:
         ./configure
         make -j2
         make install
-        echo "CMAKE_BUILD_EXTRA=-DHunspell_INCLUDE_DIR=$RUNNER_WORKSPACE\hunspell-1.7.0\src\ -DHunspell_LIBRARIES=hunspell-1.7" >> $GITHUB_ENV
+        #echo "CMAKE_BUILD_EXTRA=-DHunspell_INCLUDE_DIR=$RUNNER_WORKSPACE\hunspell-1.7.0\src\ -DHunspell_LIBRARIES=hunspell-1.7" >> $GITHUB_ENV
+
+    # - name: Install QtWebEngine on Windows
+ #       if:
+#        shell: bash
+#        run: |
+#          -DHunspell_INCLUDE_DIR
 
     - name: Install dependencies
       shell: bash
@@ -131,6 +137,16 @@ jobs:
         if [[ "${{ matrix.os }}" = "macOS"* && "${{ matrix.build_type }}" != *"without"* ]]; then
           echo "Installing Hunspell"
           brew install hunspell
+        fi
+
+        # Install QtWebKit on MacOS from source
+        if [[ "${{ matrix.os }}" = "macOS"* && "${{ matrix.build_type }}" != "qtwebkit"* ]]; then
+          echo "Installing QtWebKit 5.212 from git"
+          brew install conan
+          git clone  --depth 1 git://code.qt.io/qt/qtwebkit.git
+          cd qtwebkit
+          git checkout 5.212
+          Tools/qt/build-qtwebkit-conan.py --qt=$RUNNER_WORKSPACE/Qt/${{matrix.qt_version}}/clang_64 --install
         fi
 
         # Install Hunspell on Windows
