@@ -55,9 +55,9 @@ jobs:
 #              build_type: qtwebengine without hunspell
 #              qt_version: 5.15.2
              #TODO: Install QtWebKit on MacOS
-            - os: macOS-latest
-              build_type: qtwebkit with hunspell
-              qt_version: 5.15.2
+            #~ - os: macOS-latest
+              #~ build_type: qtwebkit with hunspell
+              #~ qt_version: 5.15.2
 
     steps:
     - name: Get Otter Browser source
@@ -157,13 +157,13 @@ jobs:
           #~ Tools/qt/build-qtwebkit-conan.py --qt=$RUNNER_WORKSPACE/Qt/${{matrix.qt_version}}/clang_64 --install
         #~ fi
 
-        if [[ "${{ matrix.os }}" = "macOS"* && "${{ matrix.build_type }}" = "qtwebkit"* ]]; then
-          sudo conda install -c conda-forge qtwebkit
-        fi
+        #~ if [[ "${{ matrix.os }}" = "macOS"* && "${{ matrix.build_type }}" = "qtwebkit"* ]]; then
+          #~ sudo conda install -c conda install -c andfoy qtwebengine
+        #~ fi
 
         # Install QtWebKit on Windows
         if [[ "${{ matrix.os }}" = "windows"* && "${{ matrix.build_type }}" = "qtwebkit"* ]]; then
-          "$CONDA\bin\conda.exe" install -c conda-forge qtwebkit
+          $CONDA/bin/conda install -c conda-forge qtwebkit
         fi
 
         # Install Hunspell on Windows
