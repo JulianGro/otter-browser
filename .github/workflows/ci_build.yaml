@@ -81,12 +81,17 @@ jobs:
 
     - name: Install hunspell on Windows
       if: startsWith(matrix.os, 'windows') && endsWith(matrix.build_type, 'with hunspell')
+      uses: msys2/setup-msys2@v2
+      with:
+        install: >-
+        base-devel
+        mingw-w64-x86_64-toolchain
+        mingw-w64-x86_64-libtool
       shell: msys2
       run: |
         curl -Ls https://github.com/hunspell/hunspell/files/2573619/hunspell-1.7.0.tar.gz -o hunspell.tar.gz
         tar -xf hunspell.tar.gz
         cd hunspell-1.7.0
-        pacman -S base-devel mingw-w64-x86_64-toolchain mingw-w64-x86_64-libtool
         autoreconf -vfi
         ./configure
         make -j2
@@ -146,10 +151,14 @@ jobs:
       shell: bash
       run: cmake $GITHUB_WORKSPACE $CMAKE_BUILD_EXTRA
 
+    - name: check if hunspell location is right
+      shell: bash
+      run: ls $RUNNER_WORKSPACE/hunspell-1.7.0/src/hunspell/
+
     - name: Build Otter Browser
       working-directory: ${{runner.workspace}}/build
       shell: bash
-      run: cmake $CMAKE_BUILD_EXTRA --parallel 3 --build .
+      run: cmake --build . --parallel 3
 
     - name: Output system stats
       if: ${{ always() }}
