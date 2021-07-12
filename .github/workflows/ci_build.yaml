@@ -15,10 +15,10 @@ jobs:
         fail-fast: false
         matrix:
           include:
-            # Windows fails because libhunspell-dev is missing. See https://github.com/OtterBrowser/otter-browser/issues/1684
-            #- os: windows-latest
-            #  build_type: qtwebengine
-            #  qt_version: 5.15.2
+             Windows fails because libhunspell-dev is missing. See https://github.com/OtterBrowser/otter-browser/issues/1684
+            - os: windows-latest
+              build_type: qtwebengine
+              qt_version: 5.15.2
             # TODO: Install QtWebKit on Windows
             #- os: windows-latest
             #  build_type: qtwebkit
@@ -71,7 +71,6 @@ jobs:
 
     - name: Install dependencies
       shell: bash
-      if: startsWith(matrix.os, 'ubuntu') || startsWith(matrix.os, 'macos')
       run: |
 
         # Install APT dependencies on Ubuntu
@@ -91,9 +90,13 @@ jobs:
 
         # Install Hunspell on MacOS
         if [[ "${{ matrix.os }}" = "macOS"* ]]; then
-          wget https://github.com/hunspell/hunspell/files/2573619/hunspell-1.7.0.tar.gz
+          wget -nv https://github.com/hunspell/hunspell/files/2573619/hunspell-1.7.0.tar.gz
           sudo mkdir -p /usr/local/include/hunspell
-          sudo tar -xf hunspell*.tar.gz /hunspell-1.7.0/src/hunspell/* -C /usr/local/include/hunspell/
+          sudo tar -C /usr/local/include/hunspell/ -xf hunspell*.tar.gz hunspell-1.7.0/src/hunspell/*
+        fi
+
+        if [[ "${{ matrix.os }}" = "windows"* ]]; then
+          echo %INCLUDE%
         fi
 
     - name: Create Build Environment
