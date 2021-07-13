@@ -16,6 +16,9 @@ jobs:
         matrix:
           include:
             - os: windows-latest
+              build_type: qtwebengine with hunspell
+              qt_version: 5.15.2
+            - os: windows-latest
               build_type: qtwebengine without hunspell
               qt_version: 5.15.2
 
@@ -72,26 +75,26 @@ jobs:
         version: ${{matrix.qt_version}}
         cached: ${{steps.cache-qt.outputs.cache-hit}}
 
-    #~ - name: Install hunspell dependencies on Windows
-      #~ if: startsWith(matrix.os, 'windows') && endsWith(matrix.build_type, 'with hunspell')
-      #~ uses: msys2/setup-msys2@v2
-      #~ with:
-        #~ install: >-
-          #~ base-devel
-          #~ mingw-w64-x86_64-toolchain
-          #~ mingw-w64-x86_64-libtool
+    - name: Install hunspell dependencies on Windows
+      if: startsWith(matrix.os, 'windows') && endsWith(matrix.build_type, 'with hunspell')
+      uses: msys2/setup-msys2@v2
+      with:
+        install: >-
+          base-devel
+          mingw-w64-x86_64-toolchain
+          mingw-w64-x86_64-libtool
 
-    #~ - name: Install hunspell on Windows
-      #~ if: startsWith(matrix.os, 'windows') && endsWith(matrix.build_type, 'with hunspell')
-      #~ shell: msys2 {0}
-      #~ run: |
-        #~ curl -Ls https://github.com/hunspell/hunspell/files/2573619/hunspell-1.7.0.tar.gz -o hunspell.tar.gz
-        #~ tar -xf hunspell.tar.gz
-        #~ cd hunspell-1.7.0
-        #~ autoreconf -vfi
-        #~ ./configure
-        #~ make -j2
-        #~ echo "CMAKE_BUILD_EXTRA=-DHunspell_INCLUDE_DIR=$RUNNER_WORKSPACE\hunspell-1.7.0\src\ -DHunspell_LIBRARIES=hunspell-1.7" >> $GITHUB_ENV
+    - name: Install hunspell on Windows
+      if: startsWith(matrix.os, 'windows') && endsWith(matrix.build_type, 'with hunspell')
+      shell: msys2 {0}
+      run: |
+        curl -Ls https://github.com/hunspell/hunspell/files/2573619/hunspell-1.7.0.tar.gz -o hunspell.tar.gz
+        tar -xf hunspell.tar.gz
+        cd hunspell-1.7.0
+        autoreconf -vfi
+        ./configure
+        make -j2
+        echo "CMAKE_BUILD_EXTRA=-DHunspell_INCLUDE_DIR=$RUNNER_WORKSPACE\hunspell-1.7.0\src\ -DHunspell_LIBRARIES=hunspell-1.7" >> $GITHUB_ENV
 
     - name: Install dependencies
       shell: bash
