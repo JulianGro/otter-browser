@@ -16,10 +16,6 @@ jobs:
         matrix:
           include:
             - os: windows-latest
-              build_type: qtwebengine with hunspell
-              qt_version: 5.15.2
-            # Windows fails if libhunspell-dev is missing. See https://github.com/OtterBrowser/otter-browser/issues/1684
-            - os: windows-latest
               build_type: qtwebengine without hunspell
               qt_version: 5.15.2
 
@@ -43,7 +39,6 @@ jobs:
             - os: macOS-latest
               build_type: qtwebengine with hunspell
               qt_version: 5.15.2
-            # MacOS fails if libhunspell-dev is missing. See https://github.com/OtterBrowser/otter-browser/issues/1684
             - os: macOS-latest
               build_type: qtwebengine without hunspell
               qt_version: 5.15.2
@@ -57,10 +52,10 @@ jobs:
 
     - name: Cache Qt
       id: cache-qt
-      uses: actions/cache@v1
+      uses: actions/cache@v2
       with:
-        path: ../Qt
-        key: ${{ runner.os }}-QtCache
+        path: ${{runner.workspace}}/Qt
+        key: ${{runner.os}}-QtCache
 
     - name: Install Qt ${{matrix.qt_version}} with QtWebEngine
       if: startsWith(matrix.os, 'windows') && startsWith(matrix.build_type, 'qtwebengine') || startsWith(matrix.os, 'macos') && startsWith(matrix.build_type, 'qtwebengine') || startsWith(matrix.os, 'ubuntu') && !startsWith(matrix.qt_version, 'repository') && startsWith(matrix.build_type, 'qtwebengine')
@@ -77,26 +72,26 @@ jobs:
         version: ${{matrix.qt_version}}
         cached: ${{steps.cache-qt.outputs.cache-hit}}
 
-    - name: Install hunspell dependencies on Windows
-      if: startsWith(matrix.os, 'windows') && endsWith(matrix.build_type, 'with hunspell')
-      uses: msys2/setup-msys2@v2
-      with:
-        install: >-
-          base-devel
-          mingw-w64-x86_64-toolchain
-          mingw-w64-x86_64-libtool
+    #~ - name: Install hunspell dependencies on Windows
+      #~ if: startsWith(matrix.os, 'windows') && endsWith(matrix.build_type, 'with hunspell')
+      #~ uses: msys2/setup-msys2@v2
+      #~ with:
+        #~ install: >-
+          #~ base-devel
+          #~ mingw-w64-x86_64-toolchain
+          #~ mingw-w64-x86_64-libtool
 
-    - name: Install hunspell on Windows
-      if: startsWith(matrix.os, 'windows') && endsWith(matrix.build_type, 'with hunspell')
-      shell: msys2 {0}
-      run: |
-        curl -Ls https://github.com/hunspell/hunspell/files/2573619/hunspell-1.7.0.tar.gz -o hunspell.tar.gz
-        tar -xf hunspell.tar.gz
-        cd hunspell-1.7.0
-        autoreconf -vfi
-        ./configure
-        make -j2
-        echo "CMAKE_BUILD_EXTRA=-DHunspell_INCLUDE_DIR=$RUNNER_WORKSPACE\hunspell-1.7.0\src\ -DHunspell_LIBRARIES=hunspell-1.7" >> $GITHUB_ENV
+    #~ - name: Install hunspell on Windows
+      #~ if: startsWith(matrix.os, 'windows') && endsWith(matrix.build_type, 'with hunspell')
+      #~ shell: msys2 {0}
+      #~ run: |
+        #~ curl -Ls https://github.com/hunspell/hunspell/files/2573619/hunspell-1.7.0.tar.gz -o hunspell.tar.gz
+        #~ tar -xf hunspell.tar.gz
+        #~ cd hunspell-1.7.0
+        #~ autoreconf -vfi
+        #~ ./configure
+        #~ make -j2
+        #~ echo "CMAKE_BUILD_EXTRA=-DHunspell_INCLUDE_DIR=$RUNNER_WORKSPACE\hunspell-1.7.0\src\ -DHunspell_LIBRARIES=hunspell-1.7" >> $GITHUB_ENV
 
     - name: Install dependencies
       shell: bash
@@ -110,24 +105,11 @@ jobs:
           sudo apt install -y ${{ matrix.apt-dependencies }}
         fi
 
-        # Install QtWebKit without installing Qt from the repositories.
-        #if [[ "${{ matrix.build_type }}" = "qtwebkit" && "${{ matrix.qt_version }}" != "repository" ]]; then
-        #    echo "Installing QtWebKit without its dependencies"
-        #    apt-get download libqt5webkit5 libqt5webkit5-dev
-        #    sudo dpkg --force-all -i libqt5webkit5*.deb
-        #fi
-
         # Install Hunspell on MacOS
         if [[ "${{ matrix.os }}" = "macOS"* && "${{ matrix.build_type }}" != *"without"* ]]; then
           echo "Installing Hunspell"
           brew install hunspell
         fi
-
-        #~ # Install Hunspell on Windows
-        #~ if [[ "${{ matrix.os }}" = "windows"* && "${{ matrix.build_type }}" != *"without"* ]]; then
-          #~ vcpkg install hunspell:x64-windows
-        #~ #  echo "CMAKE_BUILD_EXTRA=-DHunspell_INCLUDE_DIR=$RUNNER_WORKSPACE\hunspell-1.7.0\src\hunspell\hunspell.hxx -DHunspell_LIBRARIES=hunspell-1.7" >> $GITHUB_ENV
-        #~ fi
 
     - name: Create Build Environment
       shell: bash
