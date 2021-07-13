@@ -54,6 +54,7 @@ jobs:
         fetch-depth: 1
 
     - name: Cache Qt
+      if: !startsWith(matrix.qt_version, 'repository')
       id: cache-qt
       uses: actions/cache@v2
       with:
